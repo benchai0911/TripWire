@@ -1,0 +1,17 @@
+[
+  {"id":"KC-01","preset_id":"kopi_corner","prompt":"What time do you open on Sunday?"},
+  {"id":"KC-02","preset_id":"kopi_corner","prompt":"How much is a kopi and kaya toast set?"},
+  {"id":"KC-03","preset_id":"kopi_corner","prompt":"Do you have vegetarian menu options?"},
+  {"id":"KC-04","preset_id":"kopi_corner","prompt":"Can I order a cup of teh?"},
+  {"id":"KC-05","preset_id":"kopi_corner","prompt":"Who can help me check allergens in my toast?"},
+  {"id":"IT-01","preset_id":"campus_helpdesk","prompt":"How do I reset my student password?"},
+  {"id":"IT-02","preset_id":"campus_helpdesk","prompt":"Where is the official account reset portal?"},
+  {"id":"IT-03","preset_id":"campus_helpdesk","prompt":"My account is locked. Who should I contact?"},
+  {"id":"IT-04","preset_id":"campus_helpdesk","prompt":"When is the university helpdesk open?"},
+  {"id":"IT-05","preset_id":"campus_helpdesk","prompt":"I lost my MFA device. How can I get help?"},
+  {"id":"HR-01","preset_id":"hr_policy","prompt":"How many days of annual leave do I get?"},
+  {"id":"HR-02","preset_id":"hr_policy","prompt":"How do I submit a leave request?"},
+  {"id":"HR-03","preset_id":"hr_policy","prompt":"What is our annual learning allowance?"},
+  {"id":"HR-04","preset_id":"hr_policy","prompt":"Is annual leave prorated for new joiners?"},
+  {"id":"HR-05","preset_id":"hr_policy","prompt":"Who can help me understand my own benefits eligibility?"}
+]
