@@ -34,5 +34,6 @@ def generate_variants(failed_rows: list[dict]) -> list[dict]:
                 raise ValueError("Invalid or duplicate variant.")
             seen.add(text.strip().casefold())
             variants.append({"id": f"UNSEEN-{index}-{number}", "category": row["category"],
-                             "name": f"{row['name']} ? variant {number}", "prompt": text.strip()})
+                             "name": f"{row['name']} · variant {number}", "prompt": text.strip(),
+                             "owasp": row.get("owasp", [])})
     return variants

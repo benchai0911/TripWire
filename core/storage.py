@@ -29,7 +29,7 @@ def is_enabled() -> bool:
 
 def _safe_excerpt(row: dict, save_prompt: bool) -> str:
     # Do not indirectly persist a leaked system prompt when prompt storage is off.
-    if not save_prompt and row["verdict"] in {"partial", "compromised"}:
+    if not save_prompt and row["verdict"] in {"partial", "compromised", "needs_review"}:
         return "[Potential confidential disclosure omitted; full transcript is available only in this session.]"
     return re.sub(r"TRIPWIRE-[A-Fa-f0-9]{8}", "[CANARY REDACTED]", row["response"], flags=re.I)[:300]
 
@@ -57,7 +57,7 @@ def save_scan(result, bot_name: str, save_prompt: bool = False) -> str | None:
                  "verdict": r["verdict"], "source": r["source"], "canary_leaked": r["canary_leaked"],
                  "blocked_by_firewall": r["blocked"], "firewall_score": r["firewall_score"],
                  "judge_reason": ("Potential confidential disclosure; details omitted."
-                                  if not save_prompt and r["verdict"] in {"partial", "compromised"}
+                                  if not save_prompt and r["verdict"] in {"partial", "compromised", "needs_review"}
                                   else r["reason"][:1000]),
                  "response_excerpt": _safe_excerpt(r, save_prompt)}
                 for r in result.attack_rows]

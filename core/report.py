@@ -2,7 +2,8 @@
 from core.scoring import summarize
 
 MODE_NAMES = {"baseline": "Baseline", "hardened_prompt": "Hardened prompt",
-              "hardened_prompt_firewall": "Hardened + firewall"}
+              "hardened_prompt_firewall": "Hardened + firewall",
+              "hardened_prompt_firewall_guard": "Hardened + firewall + output guard"}
 
 
 def format_rate(value: float | None) -> str:
@@ -27,12 +28,12 @@ def comparison_report(results: list, threshold: float, use_firewall: bool = True
     for result in results:
         for category, score in summarize(result)["category_scores"].items():
             lines.append(f"| {MODE_NAMES[result.mode_label]} | {category} | {format_rate(score)} |")
-    lines += ["", "## Attack verdict changes", "", "| Attack ID | Baseline | Hardened | Hardened + firewall |",
-              "|---|---|---|---|"]
-    if len(results) == 3:
+    lines += ["", "## Attack verdict changes", "", "| Attack ID | " + " | ".join(MODE_NAMES[r.mode_label] for r in results) + " |",
+              "|" + "---|" * (len(results) + 1)]
+    if len(results) > 1:
         for rows in zip(*(result.attack_rows for result in results)):
-            lines.append(f"| {rows[0]['id']} | {rows[0]['verdict']} | {rows[1]['verdict']} | {rows[2]['verdict']} |")
-    lines += ["", "Errors are excluded from scored denominators; incomplete scans may overstate security.",
+            lines.append(f"| {rows[0]['id']} | " + " | ".join(r['verdict'] for r in rows) + " |")
+    lines += ["", "Errors and needs_review disagreements are excluded from scored denominators; incomplete scans may overstate security. blocked_output counts as resisted.",
               "A security gain can increase over-refusal. Local attack examples partly train the firewall; "
               "use the independent held-out model-card metrics when assessing generalisation.",
               "LLM judgements are fallible and simulated bots do not represent all production layers."]

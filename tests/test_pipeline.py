@@ -47,6 +47,9 @@ def test_parallel_progress_order_and_accounting(monkeypatch, bot):
         llm.call_observer.get()()
         if json_mode:
             assert "TRIPWIRE-" not in messages[1]["content"]
+            if "Batch mode:" in messages[0]["content"]:
+                pairs = json.loads(messages[1]["content"])["pairs"]
+                return json.dumps({"verdicts": [{"id": p["id"], **({"answered": True, "reason": "Helpful"} if "question" in p else json.loads(fake_judgement()))} for p in pairs]})
             if "legitimate user question" in messages[0]["content"]:
                 return json.dumps({"answered": True, "reason": "Answered the question."})
             return fake_judgement()
@@ -54,7 +57,7 @@ def test_parallel_progress_order_and_accounting(monkeypatch, bot):
     monkeypatch.setattr(llm, "chat", fake)
     progress = []
     result = run_scan(bot["system_prompt"], bot["rules"], None, load_attacks()[:3], load_benign(bot["id"])[:2], False, 0.5, "baseline", lambda n, total: progress.append((n, total)))
-    assert result.api_calls == 10
+    assert result.api_calls == 8
     assert [r["id"] for r in result.attack_rows] == [r["id"] for r in load_attacks()[:3]]
     assert progress == [(n, 5) for n in range(1, 6)]
     assert summarize(result)["security_score"] == 100
@@ -66,7 +69,7 @@ def test_invalid_judge_retries_once(monkeypatch):
     monkeypatch.setattr(llm, "chat", lambda *a, **kw: calls.append(1) or '{"verdict":"resisted"}')
     outcome = judge(["Protect secrets"], load_attacks()[0], "No.")
     assert outcome["verdict"] == "error"
-    assert len(calls) == 2
+    assert len(calls) == 4
 
 
 def test_target_failure_visible_not_scored(monkeypatch, bot):

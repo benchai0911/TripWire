@@ -1,12 +1,18 @@
 [theme]
-base = "dark"
-primaryColor = "#FFB000"
-backgroundColor = "#0E1117"
-secondaryBackgroundColor = "#171D29"
-textColor = "#F0F3F8"
-font = "sans serif"
+base = "light"
+primaryColor = "#F5A623"
+backgroundColor = "#F4EEE6"
+secondaryBackgroundColor = "#D9CEBF"
+textColor = "#1C1A17"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "Instrument Serif:https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap"
+codeFont = "JetBrains Mono:https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+baseRadius = "6px"
+borderColor = "#CFC4B5"
+dataframeHeaderBackgroundColor = "#D9CEBF"
 
 [client]
+toolbarMode = "minimal"
 showErrorDetails = false
 
 [browser]

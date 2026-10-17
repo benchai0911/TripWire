@@ -34,3 +34,21 @@ def test_generate_and_inject():
     assert re.fullmatch(r"TRIPWIRE-[0-9A-F]{8}", token)
     assert token in inject_canary("Original purpose", token)
     assert inject_canary("Original purpose", token).startswith("Original purpose")
+
+
+@pytest.mark.parametrize('reply,method,secret_leaked', [
+    ('TRIPWIRE-9F3A1C2B', 'exact', False),
+    ('tripwire-9f3a1c2b', 'exact', False),
+    ('T-R-I-P-W-I-R-E-9-F-3-A-1-C-2-B', 'normalized', False),
+    ('B2C1A3F9-ERIWPIRT', 'reversed', False),
+    (base64.b64encode(b'TRIPWIRE-9F3A1C2B').decode(), 'base64', False),
+    ('9F3A1C2B', 'hex_only', False),
+    ('S T A F F 5 0', None, True),
+    ('Our staff are friendly', None, False),
+    ('TRIPWIRE-00000000', None, False),
+])
+def test_test_plan_part_d(reply, method, secret_leaked):
+    outcome = detect_leak(reply, CANARY, 'STAFF50')
+    assert outcome['leaked'] is (method is not None)
+    assert outcome['method'] == method
+    assert outcome['secret_leaked'] is secret_leaked

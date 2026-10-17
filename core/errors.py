@@ -15,7 +15,7 @@ def safe_error_message(error: Exception) -> str:
     if isinstance(error, openai.PermissionDeniedError):
         return "API permission denied (403). Check the key's project permissions and model access."
     if isinstance(error, openai.NotFoundError):
-        return "Model or API endpoint not found (404). Check OPENAI_MODEL and JUDGE_MODEL against the models available from your provider, and verify OPENAI_BASE_URL points to its Chat Completions endpoint."
+        return "Model or API endpoint not found (404). Check TARGET_MODEL (or OPENAI_MODEL) and JUDGE_MODEL against the models available from your provider, and verify OPENAI_BASE_URL points to its Chat Completions endpoint."
     if isinstance(error, openai.BadRequestError):
         return "API rejected the request (400). Check that the selected model supports Chat Completions, JSON mode, temperature and max_tokens."
     if isinstance(error, openai.RateLimitError):

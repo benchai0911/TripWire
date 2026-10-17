@@ -10,14 +10,15 @@ PAGES = ["app.py"] + [str(path.relative_to(ROOT)) for path in sorted((ROOT / "pa
 
 
 @pytest.mark.parametrize("page", PAGES)
-def test_missing_key_stops_cleanly(page, monkeypatch):
+def test_missing_key_allows_own_key_and_demos(page, monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=30)
     if page != "app.py":
         app.switch_page(page.replace("\\", "/")).run(timeout=30)
     assert not app.exception
-    assert len(app.error) == 1
-    assert "OPENAI_API_KEY" in app.error[0].value
+    assert not app.error
+    if page.startswith("pages") and "Scan.py" in page:
+        assert next(b for b in app.button if b.label == "Run baseline scan").disabled
 
 
 @pytest.mark.parametrize("page", PAGES)
@@ -51,17 +52,17 @@ def test_complete_mocked_flow(monkeypatch):
     monkeypatch.setattr(llm, "chat", fake)
     app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=30)
     app.switch_page("pages/1_🎯_Scan.py").run(timeout=30)
-    app.button[0].click().run(timeout=30)
+    next(b for b in app.button if b.label == "Run baseline scan").click().run(timeout=30)
     assert not app.exception
     assert app.session_state["scans_used"] == 1
-    assert len(app.session_state["baseline"].attack_rows) == 30
+    assert len(app.session_state["baseline"].attack_rows) == 12
     app.switch_page("pages/2_🛡️_Harden_and_Retest.py").run(timeout=30)
-    app.button[0].click().run(timeout=30)
+    next(b for b in app.button if b.label == "Generate hardened prompt").click().run(timeout=30)
     assert app.session_state["hardening_changes"]
-    app.button[1].click().run(timeout=30)
+    next(b for b in app.button if b.label == "Re-test").click().run(timeout=30)
     assert not app.exception
-    assert app.session_state["scans_used"] == 3
-    assert len(app.session_state["comparison"]["runs"]) == 3
+    assert app.session_state["scans_used"] == 4
+    assert len(app.session_state["comparison"]["runs"]) == 4
 
 
 def test_missing_model_graceful(monkeypatch):
@@ -94,7 +95,7 @@ def test_documents_and_unseen_scan_flow(monkeypatch):
     harden_page = next((ROOT / "pages").glob("2_*"))
     app.switch_page(str(scan_page.relative_to(ROOT)).replace("\\", "/")).run(timeout=30)
     next(w for w in app.text_area if w.label == "Knowledge base").set_value("Hours: 9 to 5.")
-    app.toggle[0].set_value(True)
+    next(widget for widget in app.toggle if widget.label == "Include a poisoned document").set_value(True)
     app.button[0].click().run(timeout=30)
     assert not app.exception
     assert app.session_state["baseline"].document_mode == "Poisoned reference documents"
