@@ -1,10 +1,6 @@
 # Tripwire: catch your chatbot’s weaknesses before anyone else does.
 
-[Live demo](https://example.com/tripwire-demo) · [Demo video](https://example.com/tripwire-video) · [Devpost](https://example.com/tripwire-devpost) · [LinkedIn post](https://example.com/tripwire-linkedin)
-
-*Links and screenshots are placeholders. Replace them before submitting the project.*
-
-![Tripwire home — hero screenshot placeholder](assets/screenshots/home.png)
+![Tripwire home — hero screenshot placeholder](assets/homePage.png)
 
 ## Problem Statement
 
@@ -74,7 +70,7 @@ Enable mock mode for a short, free walkthrough. Live runtime depends on quota, p
 
 Read the overview, see the illustrative `STAFF50` leak, and select **Start a scan** or **Explore your chatbot’s weak spots**. The illustration is an example, not a live result.
 
-![Home screenshot placeholder](assets/screenshots/home.png)
+![Home screenshot placeholder](assets/homePage.png)
 
 ### Scan
 
@@ -85,7 +81,7 @@ Read the overview, see the illustrative `STAFF50` leak, and select **Start a sca
 5. Optionally add reference text or a poisoned-document example under **Advanced**, or a session-only provider key/base URL under **Use your own API key**.
 6. Click **Run baseline scan** to move to Results. Saving options appear only when Supabase is configured.
 
-![Scan screenshot placeholder](assets/screenshots/scan.png)
+![Scan screenshot placeholder](assets/Scan.png)
 
 ### Results
 
@@ -93,7 +89,20 @@ Inspect the score, category/OWASP breakdown, verdicts, transcripts and normal-qu
 
 Review **What to fix next**, select prompt snippets and use **Apply selected fixes** to carry them into Harden. Resume unfinished baseline cases when offered. **Export scan** downloads a JSON snapshot; **Load saved scan** imports one as read-only evidence. **Load demo results** opens clearly labelled recorded mock results without an API call.
 
-![Results screenshot placeholder](assets/screenshots/results.png)
+![Results screenshot placeholder](assets/ResultPage1.png)
+Result Page 1
+
+![Results screenshot placeholder](assets/ResultPage2.png)
+Result Page 2
+
+![Results screenshot placeholder](assets/ResultPage3.png)
+Result Page 3
+
+![Results screenshot placeholder](assets/ResultPage4.png)
+Result Page 4
+
+![Results screenshot placeholder](assets/ResultPage5.png)
+Result Page 5
 
 ### Harden
 
@@ -107,19 +116,23 @@ The **Harden** navbar link opens **Harden & Retest**. Start with a baseline or l
 
 Imported snapshots cannot be hardened/re-tested directly. Re-running a recorded demo is a new action using the current live or mock configuration.
 
-![Harden screenshot placeholder](assets/screenshots/harden.png)
+![Harden screenshot placeholder](assets/HardenPage1.png)
+Harden Page 1
+
+![Harden screenshot placeholder](assets/HardenPage2.png)
+Harden Page 2
 
 ### Firewall
 
 Type a message or select an example. Adjust the threshold to see **ALLOW/BLOCK**, estimated injection probability and the strongest positive/negative word and character contributions. The saved classifier runs locally without an LLM request. Features explain linear decision signals, not user intent or the complete calibrated probability.
 
-![Firewall screenshot placeholder](assets/screenshots/firewall.png)
+![Firewall screenshot placeholder](assets/Firewall.png)
 
 ### Model
 
 The **Model** navbar link opens **Model Card**. Review model comparison, threshold evidence, test metrics, confusion matrix, mistakes, safety notes and limitations. **Clear cache** removes reusable local scan evaluations. **Run judge check** compares the configured judge with illustrative labelled examples; it uses live quota unless mock mode is enabled.
 
-![Model screenshot placeholder](assets/screenshots/model.png)
+![Model screenshot placeholder](assets/Model.png)
 
 ### Live Test
 
@@ -127,7 +140,7 @@ Choose a preset/custom prompt, optionally generate/use a hardened prompt, and to
 
 The allowance is **20 messages total: 10 user/bot exchanges**. Reset clears the conversation, not the allowance. Changing the prompt or defence settings starts a fresh conversation.
 
-![Live Test screenshot placeholder](assets/screenshots/live-test.png)
+![Live Test screenshot placeholder](assets/LiveTest.png)
 
 ### Advanced
 
@@ -137,7 +150,7 @@ Choose one of three experiments. No real tools run, emails are sent, refunds are
 - **Pipeline injection:** choose customer emails and compare **Firewall between agents** and **Tool guard** settings. Agent A summarises without tools; Agent B sees only the summary and proposes simulated tool calls. The six emails include four poisoned inputs and two clean controls. Clean controls are excluded from pipeline attack pass rates. Injection-survival detection uses classifier/keyword heuristics.
 - **Hidden PDF text:** generate a menu with optional hidden text or upload a text PDF. Compare the rendered first page with extracted text; enable **Hidden-content scanner** to inspect cleaned text. Select a bot/normal question and compare scanner off/on runs. Preview/extraction are local; running sends document text to the model provider. Limits include 2,000,000 bytes, 1–10 pages and 30,000 extracted characters. No OCR is supported.
 
-![Advanced screenshot placeholder](assets/screenshots/advanced.png)
+![Advanced screenshot placeholder](assets/Advanced.png)
 
 **Optional History:** an additional History page appears when Supabase is enabled. Opt into saving a scan, then revisit summaries, trends and excerpts. This is shared demo history, not private per-user storage.
 
