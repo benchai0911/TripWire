@@ -12,6 +12,7 @@ borderColor = "#CFC4B5"
 dataframeHeaderBackgroundColor = "#D9CEBF"
 
 [client]
+showSidebarNavigation = false
 toolbarMode = "minimal"
 showErrorDetails = false
 

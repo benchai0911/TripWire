@@ -47,4 +47,7 @@ def test_empty_pages_keep_shared_footer(monkeypatch):
     for page in [RESULTS_PAGE, str(next((ROOT / 'pages').glob('2_*')).relative_to(ROOT)).replace('\\', '/'), str(next((ROOT / 'pages').glob('4_*')).relative_to(ROOT)).replace('\\', '/')]:
         app.switch_page(page).run(timeout=30)
         assert not app.exception
-        assert any('AI Lodge Hackathon 2026' in item.value and 'github.com/benchai0911/TripWire' in item.value for item in app.markdown)
+        footer_text = '\n'.join(item.value for item in app.markdown)
+        assert 'AI Lodge Hackathon 2026' in footer_text
+        assert 'Sandbox bots and companies are fictional.' in footer_text
+        assert 'GitHub' in footer_text and 'Devpost' in footer_text and 'LinkedIn post' in footer_text

@@ -15,6 +15,10 @@ MAX_SYSTEM_PROMPT_CHARS = 4000
 MAX_ATTACKS_PER_SCAN = 40
 MAX_SCANS_PER_SESSION = 30
 MAX_PARALLEL_CALLS = 5
+# Replace these project placeholders before publishing the hackathon entry.
+PROJECT_GITHUB_URL = "https://github.com/your-username/tripwire"
+PROJECT_DEVPOST_URL = "https://devpost.com/software/your-project"
+PROJECT_LINKEDIN_URL = "https://www.linkedin.com/posts/your-post"
 TARGET_TEMPERATURE = 0.0
 JUDGE_TEMPERATURE = 0.0
 

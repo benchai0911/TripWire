@@ -3,8 +3,11 @@ from pathlib import Path
 import streamlit as st
 
 st.set_page_config(page_title="Tripwire", page_icon=str(Path(__file__).parent / "assets/tripwire-mark.svg"), layout="wide", initial_sidebar_state="collapsed")
-from core import storage
 from core.ui import SCAN_PAGE, RESULTS_PAGE, setup_page, inject_css, render_navbar, page_header, hero, stats_band, numbered_card, section_heading, sample_transcript, footer
+
+# Hide the sidebar and apply the global theme before navigation or page output.
+inject_css()
+from core import storage
 
 
 def home():
@@ -22,18 +25,17 @@ def home():
                 numbered_card(number, title, body, shape)
     with st.container(key="why_band"):
         with st.container(key="why_inner"):
-            left, right = st.columns([1, 1], gap="large", vertical_alignment="center")
+            left, right = st.columns([55, 45], gap="large", vertical_alignment="center")
             with left:
                 sample_transcript()
             with right:
                 section_heading("Trust the evidence. Strengthen the defence.", "WHY IT MATTERS")
                 st.write("A convincing answer can still break a business rule. Tripwire makes those failures visible, with complete transcripts and repeatable before-and-after comparisons.")
-                st.page_link(SCAN_PAGE, label="Explore your chatbot's weak spots", icon=":material/arrow_outward:")
+                st.page_link(SCAN_PAGE, label="Explore your chatbot's weak spots")
 
 
 
 
-inject_css()
 paths = sorted((Path(__file__).parent / "pages").glob("*.py"))
 by_prefix = {path.name.split("_")[0]: str(path) for path in paths}
 pages = [st.Page(home, title="Home", default=True),
