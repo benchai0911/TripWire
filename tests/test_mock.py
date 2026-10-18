@@ -92,7 +92,7 @@ def test_mock_badge_and_test_bot_selector(free_mock):
     preset = next(row for row in load_test_presets() if row['id']=='A1')
     app.selectbox[0].select(preset).run(timeout=30)
     assert not app.exception
-    assert any(code.value == preset['system_prompt'] for code in app.code)
+    assert any(box.value == preset['system_prompt'] for box in app.text_area if box.label == 'Sandbox system prompt (editable)')
     next(w for w in app.button if w.label=='Run baseline scan').click().run(timeout=30)
     assert not app.exception
     assert app.session_state['scan_context']['secret'] == 'STAFF50'

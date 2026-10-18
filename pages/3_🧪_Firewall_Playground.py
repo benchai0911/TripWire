@@ -27,7 +27,8 @@ with st.container(key="tw_content"):
                 st.session_state["playground_message"] = item
     with message_slot:
         message = st.text_area("Message to classify", key="playground_message", max_chars=4000, height=120)
-    threshold = st.slider("Block threshold", 0.1, 0.9, 0.5, step=0.05)
+    from core.config import FIREWALL_THRESHOLD_DEFAULT
+    threshold = st.slider("Block threshold", 0.1, 0.9, FIREWALL_THRESHOLD_DEFAULT, step=0.05)
     if message.strip():
         probability = firewall.score(message)
         stat_card("Decision", "BLOCK" if probability >= threshold else "ALLOW", "bad" if probability >= threshold else "ok")
@@ -43,7 +44,7 @@ with st.container(key="tw_content"):
             frame["Direction"] = frame["Contribution"].map(lambda v: "Injection signal" if v > 0 else "Benign signal")
             render_chart(px.bar(frame, x="Contribution", y="Feature", orientation="h",
                                   color="Direction", color_discrete_map={"Injection signal": "#C2412D", "Benign signal": "#1F8A5B"}), width="stretch")
-            st.caption("Present word and character n-grams with the strongest positive and negative log-odds contributions. "
+            st.caption("Present word and character n-grams with the strongest positive and negative linear score contributions. "
                        "These explain the classifier, not the user's intent.")
         else:
             st.info("No contributing features found for this message.")

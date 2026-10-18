@@ -52,7 +52,8 @@ with st.container(key="tw_content"):
     use_firewall = st.toggle("Enable input firewall", disabled=not ready)
     if not ready:
         st.caption("Train the firewall with python ml/train_firewall.py to enable input blocking.")
-    threshold = st.slider("Firewall threshold", .1, .9, .5, step=.05, disabled=not use_firewall)
+    from core.config import FIREWALL_THRESHOLD_DEFAULT
+    threshold = st.slider("Firewall threshold", .1, .9, FIREWALL_THRESHOLD_DEFAULT, step=.05, disabled=not use_firewall)
     use_guard = st.toggle("Enable output guard", value=True)
     identity = hashlib.sha256(json.dumps([prompt, secret, use_firewall, threshold, use_guard]).encode()).hexdigest()
     if st.session_state.get("live_identity") != identity:

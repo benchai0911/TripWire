@@ -141,7 +141,8 @@ def pipeline_mode():
         st.caption("Train the local firewall to enable boundary blocking. Keyword detection remains available.")
     if llm.mock_mode_enabled():
         st.caption("MOCK MODE: boundary scores are scripted, not measurements from the trained classifier.")
-    threshold = st.slider("Boundary firewall threshold", .1, .9, .5, step=.05, disabled=not boundary)
+    from core.config import FIREWALL_THRESHOLD_DEFAULT
+    threshold = st.slider("Boundary firewall threshold", .1, .9, FIREWALL_THRESHOLD_DEFAULT, step=.05, disabled=not boundary)
     guard = st.toggle("Tool guard", value=False, key="pipeline_tool_guard")
     st.caption("Each run uses one scan slot, up to four API calls per email before retries. Run with defences off and then on to compare. Clean controls are excluded from attack pass rates.")
     from core.agent_target import load_preset

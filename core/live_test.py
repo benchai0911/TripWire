@@ -1,14 +1,14 @@
 """One sandbox chat turn through the same model and local defence helpers."""
 from core import llm, firewall
 from core.canary import detect_leak, inject_canary
-from core.config import get_settings, TARGET_TEMPERATURE
+from core.config import get_settings, TARGET_TEMPERATURE, FIREWALL_THRESHOLD_DEFAULT
 from core.output_guard import check, BLOCKED_RESPONSE
 from core.errors import safe_error_message
 
 MAX_MESSAGES = 20  # User and assistant messages combined; reset does not reset the session allowance.
 
 
-def reply(system_prompt, user, history, canary, secret, use_firewall=False, threshold=.5, use_guard=False):
+def reply(system_prompt, user, history, canary, secret, use_firewall=False, threshold=FIREWALL_THRESHOLD_DEFAULT, use_guard=False):
     score = None
     try:
         score = firewall.score(user)

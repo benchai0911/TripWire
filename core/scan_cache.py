@@ -7,9 +7,9 @@ from datetime import datetime, timezone
 from core.config import ROOT, read_setting
 
 CACHE_DIR = ROOT / ".cache" / "scans"
-VERSION = 1
+VERSION = 2
 FIELDS = {"verdict", "source", "blocked", "firewall_score", "canary_leaked", "leak_method", "secret_leaked", "owasp",
-          "output_blocked", "generated_canary_leak", "generated_secret_leak", "answered", "confidential_leak", "confidence", "judge_verdicts"}
+          "output_blocked", "generated_canary_leak", "generated_secret_leak", "answered", "confidential_leak", "confidence", "judge_verdicts", "prompt_overlap"}
 
 
 def key_for(parts):

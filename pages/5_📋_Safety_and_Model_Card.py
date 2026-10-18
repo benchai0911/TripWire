@@ -24,6 +24,20 @@ with st.container(key="tw_content"):
         st.info("No training metrics available. Install requirements-train.txt and run python ml/train_firewall.py.")
     if metrics:
         st.write(metrics["pipeline"])
+        if metrics.get("model_comparison"):
+            st.subheader("Model comparison · train-only five-fold CV")
+            st.dataframe(pd.DataFrame(metrics["model_comparison"])[["model", "cv_f1_mean", "cv_f1_std"]], hide_index=True, width="stretch")
+            st.caption(f"Selected {metrics['selected_model']} by mean CV F1. Default threshold {metrics['threshold']:.4f}, selected on validation for highest recall at false-positive rate ≤5%.")
+        if metrics.get("before"):
+            st.subheader("Before / after · same held-out test split")
+            keys = ["accuracy", "precision", "recall", "f1", "false_positive_rate"]
+            st.dataframe(pd.DataFrame({"Metric": keys, "Previous pipeline (refit)": [metrics["before"][k] for k in keys],
+                "New firewall": [metrics["evaluation"][k] for k in keys]}), hide_index=True, width="stretch")
+            st.caption(metrics["before"]["description"] + ". The original saved model is excluded because it has seen parts of the new split. Validation's FPR constraint is not a test-set guarantee.")
+            if metrics.get("historical"):
+                with st.expander("Historical metrics · different holdout"):
+                    st.write(metrics["historical"]["note"])
+                    st.json(metrics["historical"]["evaluation"])
         st.markdown("Training source: [deepset/prompt-injections](https://huggingface.co/datasets/deepset/prompt-injections) "
                     "(Apache-2.0), plus Tripwire attack and legitimate-question examples.")
         st.caption(f"Trained {metrics['training_date']} · seed {metrics['random_seed']} · scikit-learn {metrics['sklearn_version']}")
@@ -39,8 +53,9 @@ with st.container(key="tw_content"):
             st.dataframe(frame, hide_index=True, width="stretch")
             render_chart(px.imshow(np.array(metrics["evaluation"]["confusion_matrix"]),
                 x=["Predicted benign", "Predicted injection"], y=["Actual benign", "Actual injection"],
-                text_auto=True, color_continuous_scale="YlOrBr", title="Held-out confusion matrix · threshold 0.5"), width="stretch")
+                text_auto=True, color_continuous_scale="YlOrBr", title=f"Test confusion matrix · threshold {metrics.get('threshold', .5):.4f}"), width="stretch")
         with tradeoffs:
+            st.caption("Threshold evidence below uses validation only." if metrics.get("thresholds_split") == "validation" else "Historical threshold evidence used the old test split.")
             thresholds = []
             for threshold, values in metrics["thresholds"].items():
                 tn, fp = values["confusion_matrix"][0]
@@ -53,7 +68,7 @@ with st.container(key="tw_content"):
                     if metrics[key]:
                         st.code(json.dumps(metrics[key], indent=2, ensure_ascii=False), language=None)
                     else:
-                        st.write("No examples observed at threshold 0.5.")
+                        st.write("No examples observed at the selected threshold.")
     st.subheader("Guardrails")
     for item in [
         "Only simulated bots: there is no external target URL or endpoint input.",
@@ -82,6 +97,24 @@ with st.container(key="tw_content"):
         st.caption(f"⚠ {item}")
 
     st.subheader("Judge Check")
+    saved_metrics_path = ROOT / "ml/judge_metrics.json"
+    if saved_metrics_path.exists():
+        try:
+            recorded = json.loads(saved_metrics_path.read_text(encoding="utf-8"))
+            st.caption(f"Saved CLI evaluation: {recorded['evaluated_at']} · model {recorded['model']} · {'SCRIPTED MOCK — not accuracy' if recorded['mock'] else 'live API'}")
+            if "before" in recorded:
+                st.write(f"Saved agreement: {recorded['before']['agreement']:.1%} → {recorded['after']['agreement']:.1%} ({recorded['after']['n']} examples).")
+            else:
+                st.write(f"Saved agreement: {recorded['after']['agreement']:.1%} ({recorded['after']['n']} examples).")
+            st.caption(recorded["note"])
+            saved_matrix = pd.DataFrame(recorded["after"]["confusion_matrix"],
+                index=recorded["after"]["labels"][:3], columns=recorded["after"]["labels"])
+            render_chart(px.imshow(saved_matrix, text_auto=True, labels={"x": "Judge verdict", "y": "Human label"}, color_continuous_scale="YlOrBr", title="Saved judge confusion matrix"), width="stretch")
+            if recorded["after"]["disagreements"]:
+                with st.expander("Saved judge disagreements"):
+                    st.dataframe(pd.DataFrame(recorded["after"]["disagreements"]), hide_index=True, width="stretch")
+        except (OSError, ValueError, TypeError, KeyError):
+            st.info("Run python scripts/eval_judge.py to refresh saved judge metrics.")
     st.caption("Five illustrative seed labels are provided in data/judge_gold.json. Edit and expand them before treating this as a benchmark. Each item uses two judges, plus possible retries. Mock results are scripted, not model reliability measurements.")
     from core.config import get_settings
     from core.judge_check import evaluate, VERDICTS

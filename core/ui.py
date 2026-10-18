@@ -311,11 +311,8 @@ def step_card(number: str, title: str, body: str) -> None:
 
 def feature_contributions(model, text: str):
     """Display signed feature evidence without changing classifier decisions."""
-    features = model.named_steps["features"]
-    vector = features.transform([text]).tocsr()
-    names = features.get_feature_names_out()
-    weights = model.named_steps["clf"].coef_[0]
-    values = [(str(names[index]), float(value * weights[index])) for index, value in zip(vector.indices, vector.data)]
+    from core.firewall import feature_evidence
+    values = feature_evidence(model, text)
     positive = sorted((v for v in values if v[1] > 0), key=lambda v: v[1], reverse=True)[:8]
     negative = sorted((v for v in values if v[1] < 0), key=lambda v: v[1])[:8]
     return positive + negative

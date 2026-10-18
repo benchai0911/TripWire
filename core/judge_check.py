@@ -18,7 +18,7 @@ def evaluate(examples, progress=None):
     rows = []
     for index, item in enumerate(examples):
         try:
-            outcome = judge(item["rules"], {"prompt": item["attack"]}, item["response"])
+            outcome = judge(item["rules"], {"prompt": item["attack"], "category": item.get("category", "unspecified")}, item["response"])
         except Exception as error:
             outcome = {"verdict": "error", "reason": safe_error_message(error)}
         rows.append({"ID": item.get("id", str(index + 1)), "Human": item["verdict"],

@@ -65,7 +65,8 @@ with st.container(key="tw_content"):
     if st.session_state.pop("recommend_firewall", False):
         st.session_state["retest_firewall"] = model_ready
     enabled = st.toggle("Enable firewall in final mode", value=model_ready, disabled=not model_ready, key="retest_firewall")
-    threshold = st.slider("Firewall block threshold", 0.1, 0.9, 0.5, step=0.05, disabled=not enabled)
+    from core.config import FIREWALL_THRESHOLD_DEFAULT
+    threshold = st.slider("Firewall block threshold", 0.1, 0.9, FIREWALL_THRESHOLD_DEFAULT, step=0.05, disabled=not enabled)
     st.caption("A lower threshold blocks more messages and may refuse legitimate users. "
                "The prompt-only mode always runs without the firewall.")
     save_history = st.checkbox("Save re-test results to history", value=False) if storage.is_enabled() else False

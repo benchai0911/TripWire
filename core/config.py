@@ -1,5 +1,6 @@
 """Secrets-first configuration; credentials never enter UI output."""
 import os
+import json
 from contextvars import ContextVar
 from dataclasses import dataclass
 from pathlib import Path
@@ -16,7 +17,19 @@ MAX_SCANS_PER_SESSION = 30
 MAX_PARALLEL_CALLS = 5
 TARGET_TEMPERATURE = 0.0
 JUDGE_TEMPERATURE = 0.0
-FIREWALL_THRESHOLD_DEFAULT = 0.5
+
+def load_firewall_threshold() -> float:
+    """Use the validation-selected operating point, with safe legacy fallback."""
+    try:
+        value = json.loads((ROOT / "ml/metrics.json").read_text(encoding="utf-8")).get("threshold", .5)
+        if type(value) in (int, float) and .1 <= value <= .9:
+            return float(value)
+    except (OSError, ValueError, TypeError):
+        pass
+    return .5
+
+
+FIREWALL_THRESHOLD_DEFAULT = load_firewall_threshold()
 
 
 def read_setting(name: str, default: str = "") -> str:
