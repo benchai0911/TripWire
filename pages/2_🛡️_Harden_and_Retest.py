@@ -45,8 +45,9 @@ with st.container(key="tw_content"):
     st.session_state.setdefault("hardened_draft", baseline.system_prompt)
     left, right = st.columns(2)
     with left:
-        st.caption("Original")
-        st.code(baseline.system_prompt, language=None)
+        st.text_area("Original prompt (read-only)", value=baseline.system_prompt,
+                     height=300, disabled=True)
+        st.caption(f"{len(baseline.system_prompt)}/{MAX_SYSTEM_PROMPT_CHARS} characters")
     with right:
         edited = st.text_area("Hardened prompt (editable)", key="hardened_draft", height=300,
                               max_chars=MAX_SYSTEM_PROMPT_CHARS)

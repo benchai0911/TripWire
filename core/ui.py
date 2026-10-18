@@ -283,22 +283,27 @@ def empty_state(title: str, body: str, cta_label: str | None = None, cta_page: s
 
 
 def prompt_diff(original: str, updated: str) -> None:
+    """Render each prompt's own text, with word changes highlighted safely."""
     import difflib
+    if original == updated:
+        st.info("No changes yet. Generate or edit the hardened prompt to compare it with the original.")
+        return
+    original_words = re.split(r"(\s+)", original)
+    updated_words = re.split(r"(\s+)", updated)
     before, after = [], []
-    for line in difflib.ndiff(original.splitlines(), updated.splitlines()):
-        if line.startswith("? "):
-            continue
-        text = html.escape(line[2:])
-        if line.startswith("- "):
-            before.append(f'<span style="background:#C2412D15;color:#963221">- {text}</span>')
-        elif line.startswith("+ "):
-            after.append(f'<span style="background:#1F8A5B15;color:#17633F">+ {text}</span>')
-        else:
-            before.append(text)
-            after.append(text)
-    for col, title, lines in zip(st.columns(2), ["Original \u00b7 removed lines", "Hardened \u00b7 added lines"], [before, after]):
-        with col:
-            st.markdown('<div class="message"><div class="stat-label">' + html.escape(title) + '</div><pre>' + "\n".join(lines) + '</pre></div>', unsafe_allow_html=True)
+    for tag, start, end, new_start, new_end in difflib.SequenceMatcher(
+            None, original_words, updated_words, autojunk=False).get_opcodes():
+        old_text = html.escape(''.join(original_words[start:end]))
+        new_text = html.escape(''.join(updated_words[new_start:new_end]))
+        before.append(f'<span class="prompt-removed">{old_text}</span>' if tag in {"replace", "delete"} else old_text)
+        after.append(f'<span class="prompt-added">{new_text}</span>' if tag in {"replace", "insert"} else new_text)
+    st.caption("Prompt changes · red marks removed text; green marks added text.")
+    # One HTML render keeps both sources distinct and avoids Markdown's <pre> rewriting.
+    panels = ''.join(
+        f'<section class="prompt-diff-panel"><div class="stat-label">{title}</div>'
+        f'<div class="prompt-diff-text">{"".join(parts)}</div></section>'
+        for title, parts in [("Before · original prompt", before), ("After · hardened prompt", after)])
+    st.html(f'<div class="prompt-diff">{panels}</div>')
 
 
 def render_chart(fig, **kwargs):
@@ -326,6 +331,12 @@ def verdict_comparison(rows) -> None:
 
 STYLESHEET = '''
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+.prompt-diff {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;margin:12px 0 20px;}
+.prompt-diff-panel {min-width:0;background:#EAE2D7;border:1px solid #CFC4B5;border-radius:6px;padding:18px;}
+.prompt-diff-text {font-family:'JetBrains Mono',monospace;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.7;margin-top:12px;color:#1C1A17;}
+.prompt-removed {background:#C2412D20;color:#963221;}
+.prompt-added {background:#1F8A5B20;color:#17633F;}
+@media(max-width:900px) {.prompt-diff {grid-template-columns:minmax(0,1fr);}}
 :root {--cream:#F4EEE6;--sand:#D9CEBF;--ink:#14120F;--text:#1C1A17;--muted:#5E574E;--on-dark:#F4EEE6;--amber:#F5A623;--line:#CFC4B5;--ok:#1F8A5B;--warn:#B7791F;--bad:#C2412D;--info:#2F6FB3;--surface:var(--cream);--surface-2:#EAE2D7;--border:var(--line);--text-muted:var(--muted);--accent:var(--amber);--radius:6px;}
 html,body,[data-testid="stApp"] {background:var(--cream);color:var(--text);font-family:Inter,sans-serif;font-size:15px;}
 [data-testid="stSidebar"],[data-testid="stSidebarCollapsedControl"] {display:none!important;}
